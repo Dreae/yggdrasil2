@@ -4,5 +4,14 @@ version = "0.1.0"
 authors = ["Dreae <dreae@dreae.onl>"]
 
 [dependencies]
-nickel = "0.7.3"
-cookie = "0.1.21"
+nickel = "=0.7"
+cookie = "0.2.2"
+toml = "=0.1"
+
+[dependencies.mysql]
+version = "1.2.1"
+default-features = false
+
+[features]
+default = ["ssl"]
+ssl = ["mysql/ssl"]

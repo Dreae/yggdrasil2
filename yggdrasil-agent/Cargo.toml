@@ -3,11 +3,6 @@ name = "yggdrasil-agent"
 version = "0.1.0"
 authors = ["Dreae <dreae@dreae.onl>"]
 
-[features]
-ssl = ["nickel/ssl", "hyper/ssl"]
-timeouts = ["nickel/timeouts", "hyper/timeouts"]
-default = ["timeouts", "ssl"]
-
 [dependencies]
 getopts = "0.2.14"
 
@@ -16,4 +11,3 @@ version = "=0.7"
 
 [dependencies.hyper]
 version = "=0.6"
-default-features = false

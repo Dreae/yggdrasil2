@@ -1,3 +1,4 @@
 target
-buid/
+static/
 node_modules/
+config.toml
