@@ -5,3 +5,4 @@ authors = ["Dreae <dreae@dreae.onl>"]
 
 [dependencies]
 nickel = "0.7.3"
+cookie = "0.1.21"

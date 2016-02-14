@@ -3,6 +3,7 @@ name = "yggdrasil-agent"
 version = "0.1.0"
 dependencies = [
  "getopts 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hyper 0.6.16 (registry+https://github.com/rust-lang/crates.io-index)",
  "nickel 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
