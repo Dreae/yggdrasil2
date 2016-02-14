@@ -13,3 +13,11 @@ fn main() {
 
     server.listen("127.0.0.1:6767");
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_assert() {
+        assert!(true);
+    }
+}

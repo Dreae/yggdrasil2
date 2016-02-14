@@ -1,0 +1,15 @@
+[package]
+name = "yggdrasil-agent"
+version = "0.1.0"
+authors = ["Dreae <dreae@dreae.onl>"]
+
+[features]
+ssl = ["nickel/ssl"]
+timeouts = ["nickel/timeouts"]
+default = ["timeouts", "ssl"]
+
+[dependencies]
+getopts = "0.2.14"
+
+[dependencies.nickel]
+version = "=0.7"
