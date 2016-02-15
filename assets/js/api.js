@@ -2,7 +2,7 @@ import request from 'superagent';
 
 function get_session() {
   return new Promise((resolve, reject) => {
-    request.get("/api/session").end((err, res) => {
+    request.get("/api/restricted/session").end((err, res) => {
       if(err) {
         reject(err);
       } else {

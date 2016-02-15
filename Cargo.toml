@@ -7,10 +7,11 @@ authors = ["Dreae <dreae@dreae.onl>"]
 nickel = "=0.7"
 cookie = "0.2.2"
 toml = "=0.1"
-
-[dependencies.mysql]
-version = "1.2.1"
-default-features = false
+frank_jwt = "2.1.0"
+chrono = "0.2.19"
+rust-crypto = "0.2.34"
+hyper = { version = "0.6.16", default-features = false }
+mysql = { version = "1.2.1", default-features = false }
 
 [features]
 default = ["ssl"]

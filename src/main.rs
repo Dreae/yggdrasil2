@@ -9,12 +9,14 @@ use std::io::Read;
 use std::fs::File;
 use std::process;
 
-use nickel::{Nickel, Request, Response, HttpRouter, Router, MiddlewareResult, StaticFilesHandler};
-use nickel::status::StatusCode;
+use nickel::{Nickel, Request, Response, HttpRouter, MiddlewareResult, StaticFilesHandler};
 use mysql::conn::MyOpts;
 use mysql::conn::pool::MyPool;
 
-fn hello_world<'mw>(_: &mut Request, mut res: Response<'mw>) -> MiddlewareResult<'mw> {
+mod api;
+mod logging;
+
+fn hello_world<'mw>(_: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw> {
     let data: HashMap<String, String> = HashMap::new();
     res.render("static/index.html", &data)
 }
@@ -25,6 +27,7 @@ fn main() {
         //First run
         process::exit(1);
     }
+    let logger = logging::Logger::new("server");
 
     let mut config_file = File::open(config_path).unwrap();
     let mut config_string = String::new();
@@ -47,17 +50,11 @@ fn main() {
     let mut server = Nickel::new();
 
     server.utilize(middleware! { |request|
-        println!("Logging Request: {:?}", request.origin.uri);
+        logger.info(format!("{} - {} {:?}", request.origin.remote_addr, request.origin.method, request.origin.uri));
     });
     server.utilize(StaticFilesHandler::new("static/"));
 
-    let mut api_router = Router::new();
-    api_router.get("/api/session", middleware! { |_, mut res|
-        res.set(StatusCode::Unauthorized);
-        ""
-    });
-
-    server.utilize(api_router);
+    server.utilize(api::init_router(pool));
     server.get("**", hello_world);
 
     server.listen("127.0.0.1:6767");
