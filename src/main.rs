@@ -9,13 +9,14 @@ use std::io::Read;
 use std::fs::File;
 use std::process;
 
-use nickel::{Nickel, Request, Response, HttpRouter, MiddlewareResult, StaticFilesHandler};
+use nickel::{Nickel, Request, Response, HttpRouter, Router, MiddlewareResult, StaticFilesHandler};
+use nickel::status::StatusCode;
 use mysql::conn::MyOpts;
 use mysql::conn::pool::MyPool;
 
 fn hello_world<'mw>(_: &mut Request, mut res: Response<'mw>) -> MiddlewareResult<'mw> {
     let data: HashMap<String, String> = HashMap::new();
-    res.render("static/index.tpl", &data)
+    res.render("static/index.html", &data)
 }
 
 fn main() {
@@ -49,7 +50,15 @@ fn main() {
         println!("Logging Request: {:?}", request.origin.uri);
     });
     server.utilize(StaticFilesHandler::new("static/"));
-    server.get("/", hello_world);
+
+    let mut api_router = Router::new();
+    api_router.get("/api/session", middleware! { |_, mut res|
+        res.set(StatusCode::Unauthorized);
+        ""
+    });
+
+    server.utilize(api_router);
+    server.get("**", hello_world);
 
     server.listen("127.0.0.1:6767");
 }

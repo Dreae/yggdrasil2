@@ -1,10 +1,17 @@
 extern crate getopts;
 extern crate hyper;
 
-use getopts::Options;
+#[cfg(windows)] extern crate kernel32;
+#[cfg(windows)] extern crate winapi;
+
 use std::env;
+use std::io::Read;
+
+use getopts::Options;
 
 mod init;
+mod steamcmd;
+mod procapi;
 
 fn main() {
     let args = env::args().collect::<Vec<String>>();
