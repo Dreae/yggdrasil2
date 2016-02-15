@@ -4,6 +4,8 @@ extern crate hyper;
 #[cfg(windows)] extern crate kernel32;
 #[cfg(windows)] extern crate winapi;
 
+#[cfg(unix)] extern crate libc;
+
 use std::env;
 use std::io::Read;
 
