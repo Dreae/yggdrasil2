@@ -19,8 +19,8 @@ pub fn process_running(pid: u32) -> bool {
 #[cfg(unix)]
 pub fn process_running(pid: u32) -> bool {
     unsafe {
-        let mut code: u32 = 0;
-        let return_value = waitpid(pid, &mut code, 0);
+        let mut code: i32 = 0;
+        let return_value = waitpid(pid as i32, &mut code, 0);
         return return_value == 0;
     }
 }
