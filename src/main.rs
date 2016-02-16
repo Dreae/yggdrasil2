@@ -1,20 +1,25 @@
 #[macro_use] extern crate nickel;
 extern crate toml;
 extern crate mysql;
+extern crate plugin;
+extern crate typemap;
+extern crate cookie;
+extern crate rustc_serialize;
 
 use std::collections::HashMap;
 use std::path::Path;
 use std::fs;
 use std::io::Read;
 use std::fs::File;
-use std::process;
 
 use nickel::{Nickel, Request, Response, HttpRouter, MiddlewareResult, StaticFilesHandler};
-use mysql::conn::MyOpts;
-use mysql::conn::pool::MyPool;
+use mysql::Opts;
+use mysql::conn::pool::Pool;
 
-mod api;
 mod logging;
+mod password;
+mod middleware;
+mod api;
 
 fn hello_world<'mw>(_: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw> {
     let data: HashMap<String, String> = HashMap::new();
@@ -24,8 +29,8 @@ fn hello_world<'mw>(_: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw
 fn main() {
     let config_path = Path::new("config.toml");
     if !fs::metadata(config_path).is_ok() {
-        //First run
-        process::exit(1);
+        // TODO: First run
+        panic!("Config file not found");
     }
     let logger = logging::Logger::new("server");
 
@@ -37,24 +42,26 @@ fn main() {
     };
 
     let ref db_value = toml::Parser::new(&config_string).parse().unwrap()["database"];
-    let opts = MyOpts {
+    let opts = Opts {
         user: db_value.lookup("user").map(|usr| usr.as_str().map(|s| s.to_string()).unwrap()),
         pass:  db_value.lookup("password").map(|pas| pas.as_str().map(|s| s.to_string()).unwrap()),
-        tcp_addr:  db_value.lookup("host").map(|adr| adr.as_str().map(|s| s.to_string()).unwrap()),
+        ip_or_hostname:  db_value.lookup("host").map(|adr| adr.as_str().map(|s| s.to_string()).unwrap()),
         tcp_port:  db_value.lookup("port").map(|prt| prt.as_integer().unwrap()).unwrap() as u16,
         db_name:  db_value.lookup("db_name").map(|db| db.as_str().map(|s| s.to_string()).unwrap()),
         ..Default::default()
     };
-    let pool = MyPool::new(opts).unwrap();
+    let pool = Pool::new(opts).unwrap();
 
     let mut server = Nickel::new();
 
     server.utilize(middleware! { |request|
         logger.info(format!("{} - {} {:?}", request.origin.remote_addr, request.origin.method, request.origin.uri));
     });
+
+    server.utilize(middleware::MysqlMiddleware::new(pool));
     server.utilize(StaticFilesHandler::new("static/"));
 
-    server.utilize(api::init_router(pool));
+    server.utilize(api::init_router());
     server.get("**", hello_world);
 
     server.listen("127.0.0.1:6767");

@@ -28,6 +28,10 @@ div[riot-tag="login-page"] .login-card .form-row i {
   color: rgba(0,0,0,0.6);
 }
 
+div[riot-tag="login-page"] .login-card .form-row .error {
+  color: rgb(244, 67, 54);
+}
+
 div[riot-tag="login-page"] .login-card .header {
   color: white;
   text-align: center;

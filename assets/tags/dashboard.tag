@@ -28,10 +28,9 @@
   <script>
     import api from "../js/api.js";
 
-    api.get_session().then(function(session) {
+    api.get_session().then((session) => {
 
-    }, function(err) {
-      console.debug("Unable to get session, redirecting to login");
+    }, (err) => {
       riot.route("login");
     });
   </script>

@@ -5,13 +5,17 @@ authors = ["Dreae <dreae@dreae.onl>"]
 
 [dependencies]
 nickel = "=0.7"
-cookie = "0.2.2"
+cookie = { version = "0.1.21", default-features = false }
 toml = "=0.1"
 frank_jwt = "2.1.0"
 chrono = "0.2.19"
 rust-crypto = "0.2.34"
+plugin = "0.2.6"
+typemap = "0.3.3"
 hyper = { version = "0.6.16", default-features = false }
-mysql = { version = "1.2.1", default-features = false }
+mysql = { version = "2.0.0", default-features = false }
+rustc-serialize = "0.3.18"
+rand = "0.3.14"
 
 [features]
 default = ["ssl"]
