@@ -1,5 +1,5 @@
-import "../node_modules/material-design-lite/dist/material.css";
-import "../node_modules/material-design-lite/dist/material.js";
+import "../node_modules/materialize-css/dist/css/materialize.css";
+import "../node_modules/materialize-css/dist/js/materialize.js";
 import "./styles/style.css";
 import "./index.html";
 

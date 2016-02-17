@@ -1,4 +1,4 @@
-div[riot-tag="login-page"] .container {
+div[riot-tag="login-page"] .login-container {
   display: flex;
   height: 100%;
   justify-content: center;
@@ -21,6 +21,10 @@ div[riot-tag="login-page"] .login-card .form-row {
   justify-content: center;
   align-items: center;
   align-self: center;
+}
+
+div[riot-tag="login-page"] .login-card .form-row input[type="text"], div[riot-tag="login-page"] .login-card .form-row input[type="password"] {
+  width: 264px;
 }
 
 div[riot-tag="login-page"] .login-card .form-row i {

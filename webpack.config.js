@@ -23,7 +23,7 @@ module.exports = {
       { test: /index\.html/, loader: 'file?name=[name].[ext]' },
       { test: /\.css$/, loaders: ["style", "css"] },
       { test: /\.js$|\.tag$/, exclude: /node_modules/, loader: 'babel', query: { presets: ["es2015"] } },
-      { test: /\.(jpe?g|png|gif)/, loader: 'file' }
+      { test: /\.(jpe?g|png|gif|eot|woff|woff2|ttf|svg)/, loader: 'file' }
     ]
   }
 }

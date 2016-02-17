@@ -41,6 +41,7 @@
     "css-loader": "^0.23.1",
     "file-loader": "^0.8.5",
     "material-design-lite": "^1.1.1",
+    "materialize-css": "^0.97.5",
     "node-sass": "^3.4.2",
     "pushstate-server": "^1.8.1",
     "riot": "^2.3.15",
