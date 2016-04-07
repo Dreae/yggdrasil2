@@ -1,5 +1,9 @@
 var webpack = require('webpack');
 
+var providePlugin = new webpack.ProvidePlugin({
+  $: "jquery"
+});
+
 module.exports = {
   entry: {
     app: ["./assets/index.js"]

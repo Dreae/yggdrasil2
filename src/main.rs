@@ -21,7 +21,7 @@ mod password;
 mod middleware;
 mod api;
 
-fn hello_world<'mw>(_: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw> {
+fn index<'mw>(_: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw> {
     let data: HashMap<String, String> = HashMap::new();
     res.render("static/index.html", &data)
 }
@@ -41,7 +41,12 @@ fn main() {
         Err(e) => { panic!("Error reading config file! {}", e) }
     };
 
-    let ref db_value = toml::Parser::new(&config_string).parse().unwrap()["database"];
+    let db_option = toml::Parser::new(&config_string).parse();
+    if db_option.is_none() {
+        panic!("Unable to read config file");
+    }
+
+    let ref db_value = db_option.unwrap()["database"];
     let opts = Opts {
         user: db_value.lookup("user").map(|usr| usr.as_str().map(|s| s.to_string()).unwrap()),
         pass:  db_value.lookup("password").map(|pas| pas.as_str().map(|s| s.to_string()).unwrap()),
@@ -62,15 +67,7 @@ fn main() {
     server.utilize(StaticFilesHandler::new("static/"));
 
     server.utilize(api::init_router());
-    server.get("**", hello_world);
+    server.get("**", index);
 
     server.listen("127.0.0.1:6767");
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_assert() {
-        assert!(true);
-    }
 }

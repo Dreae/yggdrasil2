@@ -7,10 +7,10 @@ authors = ["Dreae <dreae@dreae.onl>"]
 getopts = "0.2.14"
 
 [dependencies.nickel]
-version = "=0.7"
+version = "=0.8"
 
 [dependencies.hyper]
-version = "=0.6"
+version = "=0.8"
 
 [target.x86_64-unknown-linux-gnu.dependencies]
 libc = "0.2.7"
