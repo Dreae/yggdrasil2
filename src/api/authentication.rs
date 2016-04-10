@@ -10,7 +10,10 @@ use mysql::error::Error;
 use mysql;
 
 use middleware::MysqlRequestExtensions;
+use logging::{Logger, LogLevel};
 use password;
+
+const LOGGER: Logger<'static> = Logger{ name: "authentication", level: LogLevel::Info as i32 };
 
 pub fn authentication_middleware<'mw>(req: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw> {
     if !req.origin.headers.has::<header::Cookie>() {
@@ -74,6 +77,9 @@ pub fn login<'mw>(req: &mut Request, mut res: Response<'mw>) -> MiddlewareResult
                 None => { res.error(StatusCode::Unauthorized, "Unauthorized") }
             };
         }
-        Err(_) => { return res.error(StatusCode::Unauthorized, "Unauthorized"); }
+        Err(e) => {
+            LOGGER.error(format!("Error requesting user from database {}", e));
+            return res.error(StatusCode::Unauthorized, "Unauthorized");
+        }
     };
 }

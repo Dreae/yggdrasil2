@@ -1,5 +1,4 @@
 use std::sync::Arc;
-
 use mysql::conn::pool::Pool;
 use nickel::{Request, Response, Middleware, Continue, MiddlewareResult};
 use typemap::Key;

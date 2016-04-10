@@ -5,6 +5,7 @@ extern crate plugin;
 extern crate typemap;
 extern crate cookie;
 extern crate rustc_serialize;
+extern crate hyper;
 
 use std::collections::HashMap;
 use std::path::Path;
@@ -32,8 +33,7 @@ fn main() {
         // TODO: First run
         panic!("Config file not found");
     }
-    let logger = logging::Logger::new("server");
-
+    
     let mut config_file = File::open(config_path).unwrap();
     let mut config_string = String::new();
     match config_file.read_to_string(&mut config_string) {
@@ -59,9 +59,7 @@ fn main() {
 
     let mut server = Nickel::new();
 
-    server.utilize(middleware! { |request|
-        logger.info(format!("{} - {} {:?}", request.origin.remote_addr, request.origin.method, request.origin.uri));
-    });
+    server.utilize(logging::LoggingMiddleware::new("request"));
 
     server.utilize(middleware::MysqlMiddleware::new(pool));
     server.utilize(StaticFilesHandler::new("static/"));
