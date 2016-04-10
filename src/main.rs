@@ -33,7 +33,7 @@ fn main() {
         // TODO: First run
         panic!("Config file not found");
     }
-    
+
     let mut config_file = File::open(config_path).unwrap();
     let mut config_string = String::new();
     match config_file.read_to_string(&mut config_string) {
@@ -41,12 +41,13 @@ fn main() {
         Err(e) => { panic!("Error reading config file! {}", e) }
     };
 
-    let db_option = toml::Parser::new(&config_string).parse();
-    if db_option.is_none() {
+    let parse_result = toml::Parser::new(&config_string).parse();
+    if parse_result.is_none() {
         panic!("Unable to read config file");
     }
 
-    let ref db_value = db_option.unwrap()["database"];
+    let config = parse_result.unwrap();
+    let ref db_value = config["database"];
     let opts = Opts {
         user: db_value.lookup("user").map(|usr| usr.as_str().map(|s| s.to_string()).unwrap()),
         pass:  db_value.lookup("password").map(|pas| pas.as_str().map(|s| s.to_string()).unwrap()),
@@ -65,6 +66,7 @@ fn main() {
     server.utilize(StaticFilesHandler::new("static/"));
 
     server.utilize(api::init_router());
+    server.utilize(api::internal::init_router(&config));
     server.get("**", index);
 
     server.listen("127.0.0.1:6767");

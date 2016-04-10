@@ -2,6 +2,8 @@ use nickel::{Router, HttpRouter};
 
 mod authentication;
 
+pub mod internal;
+
 pub fn init_router() -> Router {
     let mut api_router = Router::new();
 
