@@ -3,3 +3,26 @@ body {
   padding: 0;
   font-family: "Roboto", sans-serif;
 }
+
+.yggdrasil-container {
+  display: flex;
+}
+
+.yggdrasil-side-nav {
+  height: 100%;
+  width: 240px;
+}
+
+.yggdrasil-side-nav .collection {
+  margin: 0;
+}
+
+.yggdrasil-side-nav .collection-item.nav-item {
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+
+.yggdrasil-side-nav .collection-item.nav-item i {
+  margin-right: 8px;
+}
