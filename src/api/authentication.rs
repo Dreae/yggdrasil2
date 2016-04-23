@@ -1,7 +1,7 @@
 extern crate frank_jwt;
 extern crate hyper;
 
-use nickel::{Request, Response, MiddlewareResult, JsonBody};
+use nickel::{Request, Response, MiddlewareResult, JsonBody, Continue};
 use nickel::status::StatusCode;
 use cookie::{Cookie, CookieJar};
 use self::hyper::header;
@@ -25,7 +25,7 @@ pub fn authentication_middleware<'mw>(req: &mut Request, res: Response<'mw>) -> 
         Some(cookie) => {
             // TODO: Get the secret key to this middleware (Request extension for server settings?)
             match frank_jwt::decode(cookie.value, "secret123".to_owned(), frank_jwt::Algorithm::HS512) {
-                Ok(_) => { res.next_middleware() }
+                Ok(_) => { Ok(Continue(res)) }
                 Err(_) => { res.error(StatusCode::Unauthorized, "Unauthorized") }
             }
         }
