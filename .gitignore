@@ -1,4 +1,3 @@
 target
-static/
-node_modules
-config.toml
+.env
+Cargo.lock

@@ -4,19 +4,14 @@ version = "0.1.0"
 authors = ["Dreae <dreae@dreae.onl>"]
 
 [dependencies]
-nickel = "=0.8"
-cookie = { version = "0.2.2", default-features = false }
-toml = "=0.1"
-frank_jwt = "2.1.0"
-chrono = "0.2.19"
-rust-crypto = "0.2.34"
-plugin = "0.2.6"
-typemap = "0.3.3"
-hyper = { version = "0.8.0", default-features = false }
-mysql = { version = "2.0.0", default-features = false }
-rustc-serialize = "0.3.18"
-rand = "0.3.14"
-
-[features]
-default = ["ssl"]
-ssl = ["mysql/ssl"]
+rocket = "0.1.4"
+rocket_codegen = "0.1.4"
+rocket_contrib = "0.1.4"
+diesel = "0.9.0"
+diesel_codegen = { version = "0.9.0", features = ["postgres"] }
+dotenv = "0.8.0"
+r2d2 = "0.7.1"
+r2d2-diesel = "0.9.0"
+lazy_static = "0.2.2"
+serde = "0.8.21"
+serde_derive = "0.8.21"

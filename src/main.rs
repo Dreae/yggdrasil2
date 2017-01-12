@@ -1,73 +1,44 @@
-#[macro_use] extern crate nickel;
-extern crate toml;
-extern crate mysql;
-extern crate plugin;
-extern crate typemap;
-extern crate cookie;
-extern crate rustc_serialize;
-extern crate hyper;
+#![feature(plugin)]
+#![plugin(rocket_codegen)]
+#![feature(drop_types_in_const)]
+#![feature(const_fn)]
 
-use std::collections::HashMap;
-use std::path::Path;
-use std::fs;
-use std::io::Read;
-use std::fs::File;
+#[macro_use] extern crate diesel;
+#[macro_use] extern crate diesel_codegen;
+#[macro_use] extern crate lazy_static;
+#[macro_use] extern crate serde_derive;
+extern crate rocket;
+extern crate rocket_contrib;
+extern crate dotenv;
+extern crate r2d2;
+extern crate r2d2_diesel;
 
-use nickel::{Nickel, Request, Response, HttpRouter, MiddlewareResult, StaticFilesHandler};
-use mysql::Opts;
-use mysql::conn::pool::Pool;
+use diesel::pg::PgConnection;
+use r2d2_diesel::ConnectionManager;
+use dotenv::dotenv;
+use std::env;
 
-mod logging;
-mod password;
-mod middleware;
-mod api;
+lazy_static! {
+  pub static ref POOL: r2d2::Pool<ConnectionManager<PgConnection>> = {
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL to be set");
+    let config = r2d2::Config::default();
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    r2d2::Pool::new(config, manager).expect("Failed to create connection pool")
+  };
+}
 
-fn index<'mw>(_: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw> {
-    let data: HashMap<String, String> = HashMap::new();
-    res.render("static/index.html", &data)
+#[macro_export]
+macro_rules! get_conn {
+  () => (POOL.clone().get().unwrap())
 }
 
 fn main() {
-    let config_path = Path::new("config.toml");
-    if !fs::metadata(config_path).is_ok() {
-        // TODO: First run
-        panic!("Config file not found");
-    }
+  dotenv().ok();
 
-    let mut config_file = File::open(config_path).unwrap();
-    let mut config_string = String::new();
-    match config_file.read_to_string(&mut config_string) {
-        Ok(_) => { }
-        Err(e) => { panic!("Error reading config file! {}", e) }
-    };
+  {
+    let conn = get_conn!();
+    diesel::migrations::run_pending_migrations(&*conn).expect("Error running migrations");
+  }
 
-    let parse_result = toml::Parser::new(&config_string).parse();
-    if parse_result.is_none() {
-        panic!("Unable to read config file");
-    }
-
-    let config = parse_result.unwrap();
-    let ref db_value = config["database"];
-    let opts = Opts {
-        user: db_value.lookup("user").map(|usr| usr.as_str().map(|s| s.to_string()).unwrap()),
-        pass:  db_value.lookup("password").map(|pas| pas.as_str().map(|s| s.to_string()).unwrap()),
-        ip_or_hostname:  db_value.lookup("host").map(|adr| adr.as_str().map(|s| s.to_string()).unwrap()),
-        tcp_port:  db_value.lookup("port").map(|prt| prt.as_integer().unwrap()).unwrap() as u16,
-        db_name:  db_value.lookup("db_name").map(|db| db.as_str().map(|s| s.to_string()).unwrap()),
-        ..Default::default()
-    };
-    let pool = Pool::new(opts).unwrap();
-
-    let mut server = Nickel::new();
-
-    server.utilize(logging::LoggingMiddleware::new("request"));
-
-    server.utilize(middleware::MysqlMiddleware::new(pool));
-    server.utilize(StaticFilesHandler::new("static/"));
-
-    server.utilize(api::init_router());
-    server.utilize(api::internal::init_router(&config));
-    server.get("**", index);
-
-    server.listen("127.0.0.1:6767");
+  rocket::ignite().mount("/api", routes![]).launch();
 }
