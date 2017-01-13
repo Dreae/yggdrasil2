@@ -2,6 +2,8 @@ machine:
   environment:
     DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
 dependencies:
+  cache_directories:
+    - /home/ubuntu/.cargo
   override:
     - rm -f ~/.gitconfig
     - curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
@@ -12,4 +14,11 @@ test:
     - $HOME/.cargo/bin/cargo test
 compile:
   override:
-    - $HOME/.cargo/bin/cargo build --release
+    - $HOME/.cargo/bin/cargo build
+deployment:
+  release:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    owner: Dreae
+    commands:
+      - $HOME/.cargo/bin/cargo build --release
+      - ./deploy_tag.sh
