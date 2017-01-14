@@ -2,8 +2,6 @@ machine:
   environment:
     DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
 dependencies:
-  cache_directories:
-    - /home/ubuntu/.cargo
   override:
     - rm -f ~/.gitconfig
     - curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
