@@ -27,17 +27,14 @@ lazy_static! {
   };
 }
 
-#[macro_export]
-macro_rules! get_conn {
-  () => (&*POOL.clone().get().unwrap())
-}
+mod middleware;
 
 fn main() {
   dotenv().ok();
 
   {
-    let conn = get_conn!();
-    diesel::migrations::run_pending_migrations(conn).expect("Error running migrations");
+    let conn = middleware::DBConnection::new();
+    diesel::migrations::run_pending_migrations(&*conn).expect("Error running migrations");
   }
 
   rocket::ignite().mount("/api", routes![]).launch();
